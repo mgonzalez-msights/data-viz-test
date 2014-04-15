@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="http://code.jquery.com/jquery.js"></script>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.0/handlebars.js"></script>
+<script src="http://builds.emberjs.com/ember-latest.js"></script>
+<meta charset=utf-8 />
+<title>Donuts</title>
+</head>
+  
+<body>
+  <script type="text/x-handlebars" data-template-name="application">
+    {{donut-chart width=400 height=200}}
+    {{donut-chart width=300 height=150}}
+    {{donut-chart width=200 height=100}}
+    {{donut-chart width=960 height=500 data=content}}
+  </script>
+
+  <script type="text/x-handlebars" id="components/donut-chart">
+  </script>
+
+<script type="text/javascript">
+	
+// http://bl.ocks.org/mbostock/3887193
+
+var color = ["#3b5998", "#FF0000", "#00FF00", "#FFFF00", "#66CCFF", "#FF00FF", "#C0C0C0"];
+
+App = Ember.Application.create();
+
+App.DonutChartComponent = Ember.Component.extend({
+  tagName: 'svg',
+  
+  didInsertElement: function(){
+    var width = this.get('width');
+    var height = this.get('height');
+    var radius = Math.min(width, height) / 2;
+  
+    var arc = d3.svg.arc()
+      .outerRadius(radius)
+      .innerRadius(radius-30);
+  
+    var pie = d3.layout.pie()
+        .sort(null)
+        .value(function(d) { return d.population; });
+  
+    var id = this.$().attr('id');
+    var svg = d3.select("#"+id)
+        .attr("width", width)
+        .attr("height", height)
+      .append("g")
+        .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+    var g = svg.selectAll(".arc")
+      .data(pie(DATA))
+    .enter().append("g")
+      .attr("class", "arc");
+  
+    g.append("path")
+      .attr("d", arc)
+      .style("fill", function(d, i) { return color[i]; });
+  }
+});
+
+
+var DATA = [
+  {age: '<5', population: 2704659},
+  {age: '5-13', population: 4499890},
+  {age: '14-17', population: 2159981},
+  {age: '18-24', population: 3853788},
+  {age: '25-44', population: 14106543},
+  {age: '45-64', population: 8819342},
+  {age: '≥65', population: 612463}
+];
+
+
+</script>
+
+</body>
+</html>
